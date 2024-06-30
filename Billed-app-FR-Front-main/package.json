@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "test": "jest --coverage --noStackTrace --silent"
+    "test": "jest --coverage --noStackTrace --silent",
+    "test:dev": "jest --coverage --noStackTrace --watch",
+    "coverage": "live-server coverage/lcov-report"
   },
   "jest": {
     "verbose": false,
