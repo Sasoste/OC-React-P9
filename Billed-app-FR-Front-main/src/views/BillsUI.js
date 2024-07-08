@@ -4,6 +4,7 @@ import LoadingPage from "./LoadingPage.js"
 
 import Actions from './Actions.js'
 
+
 const row = (bill) => {
   return (`
     <tr>
@@ -20,7 +21,7 @@ const row = (bill) => {
 }
 
 const rows = (data) => {
-  if (!data || !data.length) return "no data"
+  if (!data || !data.length) return ""
   data.sort((a, b) => new Date(b.date) - new Date(a.date))
   return data.map(bill => row(bill)).join("")
 }
