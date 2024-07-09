@@ -86,31 +86,30 @@ export default class {
   }
 
   handleEditTicket(e, bill, bills) {
-    if (this.counter === undefined || this.id !== bill.id) this.counter = 0
-    if (this.selectedBillId === undefined || this.selectedBillId !== bill.id) {
-      this.selectedBillId = bill.id;
-    }
-    if (this.counter % 2 === 0) {
-      bills.forEach(b => {
-        $(`#open-bill${b.id}`).css({ background: '#0D5AE5' })
-      })
-      $(`#open-bill${bill.id}`).css({ background: '#2A2B35' })
-      $('.dashboard-right-container div').html(DashboardFormUI(bill))
-      $('.vertical-navbar').css({ height: '150vh' })
-      this.counter++
-    } else {
+    const currentBill = this.selectedBillId
+    if (currentBill === bill.id) {
       $(`#open-bill${bill.id}`).css({ background: '#0D5AE5' })
 
       $('.dashboard-right-container div').html(`
         <div id="big-billed-icon" data-testid="big-billed-icon"> ${BigBilledIcon} </div>
       `)
       $('.vertical-navbar').css({ height: '120vh' })
-      this.counter++
+      this.selectedBillId = null
+    } else {
+      bills.forEach(b => {
+        $(`#open-bill${b.id}`).css({ background: '#0D5AE5' })
+      })
+      $(`#open-bill${bill.id}`).css({ background: '#2A2B35' })
+      $('.dashboard-right-container div').html(DashboardFormUI(bill))
+      $('.vertical-navbar').css({ height: '150vh' })
+      this.selectedBillId = bill.id
     }
-    $('#icon-eye-d').click(this.handleClickIconEye)
-    $('#btn-accept-bill').click((e) => this.handleAcceptSubmit(e, bill))
-    $('#btn-refuse-bill').click((e) => this.handleRefuseSubmit(e, bill))
-    this.selectedBillId = bill.id;
+    bills.forEach(b => {
+      $(`#open-bill${b.id}`).off('click').click((e) => this.handleEditTicket(e, b, bills));
+    });
+    $('#icon-eye-d').off('click').click(this.handleClickIconEye);
+    $('#btn-accept-bill').off('click').click((e) => this.handleAcceptSubmit(e, bill));
+    $('#btn-refuse-bill').off('click').click((e) => this.handleRefuseSubmit(e, bill));
   }
 
   handleAcceptSubmit = (e, bill) => {

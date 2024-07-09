@@ -81,3 +81,5 @@ export default ({ data: bills, loading, error }) => {
     </div>`
   )
 }
+
+export { rows }
