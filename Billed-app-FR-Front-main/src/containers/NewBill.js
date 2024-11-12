@@ -15,45 +15,29 @@ export default class NewBill {
     this.billId = null
     new Logout({ document, localStorage, onNavigate })
   }
+
   handleChangeFile = e => {
     e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
-    const filePath = e.target.value.split(/\\/g)
-    const fileName = filePath[filePath.length - 1]
+    const fileName = file.name
     const fileExtension = fileName.split('.').pop().toLowerCase()
     const extension = ['jpg', 'png', 'jpeg']
-    if (!extension.includes(fileExtension)) {
+    if (extension.includes(fileExtension)) {
+      const formData = new FormData()
+      const email = JSON.parse(localStorage.getItem("user")).email
+      formData.append('file', file)
+      formData.append('email', email)
+      this.formData = formData;
+      this.fileName = fileName;
+    } else {
       alert('png jpg jpeg only')
       e.target.value = ''
       return
     }
-    if (!fileName) {
-      e.target.value = ''
-      return
-    }
-    const formData = new FormData()
-    const email = JSON.parse(localStorage.getItem("user")).email
-    formData.append('file', file)
-    formData.append('email', email)
-
-    this.store
-      .bills()
-      .create({
-        data: formData,
-        headers: {
-          noContentType: true
-        }
-      })
-      .then(({ fileUrl, key }) => {
-        console.log(fileUrl)
-        this.billId = key
-        this.fileUrl = fileUrl
-        this.fileName = fileName
-      }).catch(error => console.error(error))
   }
+
   handleSubmit = e => {
     e.preventDefault()
-    console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
     const email = JSON.parse(localStorage.getItem("user")).email
     const bill = {
       email,
@@ -67,9 +51,21 @@ export default class NewBill {
       fileUrl: this.fileUrl,
       fileName: this.fileName,
       status: 'pending'
-    }
-    this.updateBill(bill)
-    this.onNavigate(ROUTES_PATH['Bills'])
+    };
+    this.store
+      .bills()
+      .create({
+        data: this.formData,
+        headers: {
+          noContentType: true
+        }
+      })
+      .then(({ fileUrl, key }) => {
+        console.log(fileUrl)
+        this.billId = key
+        this.fileUrl = fileUrl
+        this.updateBill(bill);
+      }).catch(error => console.error(error))
   }
 
   // not need to cover this function by tests
